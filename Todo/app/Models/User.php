@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -17,7 +17,10 @@ class User extends Authenticatable
         'email',
         'password',
     ];
-
+    protected $dates = [
+        'created_at',
+        'updated_at',
+    ];
 
     protected $hidden = [
         'password',
@@ -27,9 +30,13 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'created_at' => 'datetime:Y-m-d',
+        'updated_at' => 'datetime:Y-m-d',
     ];
 
-    public function todos(){
+    public function todos()
+    {
         return $this->hasMany(Todo::class);
     }
+
 }
