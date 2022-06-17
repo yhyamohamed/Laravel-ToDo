@@ -13,7 +13,9 @@ use \App\Http\Controllers\TodoController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::resource('/todos',TodoController::class);
+Route::resource('/todos',TodoController::class)->missing(function (Request $request, Exception $e) {
+    return response()->json(['Error' => 'sry we cant find that to do'], 500);
+});
 //Route::get('/todos',[TodoController::class,'index']);
 //Route::post('/todos',[TodoController::class,'store']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
