@@ -19,9 +19,7 @@ return new class extends Migration
             $table->text('description');
             $table->enum('status', ['done', 'not-yet']);
             $table->timestamps();
-            $table->foreign('user_id')
-            ->references('id')->on('users')
-            ->onDelete('cascade');
+            $table->foreignID('user_id')->constrained()->onDelete('cascade');
         });
     }
 
