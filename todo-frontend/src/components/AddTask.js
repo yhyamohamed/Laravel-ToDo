@@ -26,6 +26,7 @@ const AddTask = ({childMsg}) => {
     "http://127.0.0.1:8000/api/todos",
     obToSend
   );
+  
   const handleFormSubmition = (e) => {
     e.preventDefault();
     //check for missing inputs

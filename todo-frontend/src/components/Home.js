@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import AddTask from "./AddTask.js";
 import axios from "axios";
+import EditTodo from "./EditTodo.js";
+import { Routes, Link, Route } from "react-router-dom";
 const Home = () => {
   const BASE_URL = "http://127.0.0.1:8000/api/todos/";
 
@@ -10,6 +12,7 @@ const Home = () => {
   const [isPending, setIsPending] = useState(true);
   const [error, setError] = useState(false);
   const [showAddBox, setShowAddBox] = useState(false);
+  const [showUpdateBox, setShowUpdateBox] = useState(false);
 
   const getMsgFromChilds = (data, err) => {
     if (data) {
@@ -60,6 +63,18 @@ const Home = () => {
         setMsg(error.message);
       });
   };
+
+  const UpdateMsg = (msg) => {
+    if (msg.status === 200) {
+      fetchApiData();
+    } else {
+      setMsg(msg.statusText);
+    }
+  };
+
+  const updateBtnClicked = () => {
+    setShowUpdateBox(!showUpdateBox);
+  };
   useEffect(() => {
     fetchApiData();
   }, [needrefresh]);
@@ -99,7 +114,6 @@ const Home = () => {
                   className="btn btn-sm btn-success offset-7 col-3"
                   onClick={toggleAddBox}
                 >
-                  {" "}
                   Add a task
                 </button>
               )}
@@ -108,7 +122,7 @@ const Home = () => {
                   className="btn btn-sm btn-warning offset-7 col-3"
                   onClick={toggleAddBox}
                 >
-                  Hide add box{" "}
+                  Hide add box
                 </button>
               )}
             </caption>
@@ -132,9 +146,25 @@ const Home = () => {
                   <td>{task.creator?.name}</td>
                   <td>{task.created_at}</td>
                   <td style={{ whiteSpace: "nowrap" }}>
-                    <button className="btn btn-sm btn-warning me-1">
+                    {!showUpdateBox &&<Link
+                      to={`/todos/${task.id}`}
+                      className="btn btn-sm btn-warning me-1"
+                      onClick={() => {
+                        updateBtnClicked();
+                      }}
+                    >
                       Edit
-                    </button>
+                    </Link>}
+                    {showUpdateBox &&<button
+                      to={`/todos/${task.id}`}
+                      className="btn btn-sm btn-warning me-1"
+                      onClick={() => {
+                        updateBtnClicked();
+                      }}
+                    >
+                     hide edit box
+                    </button>}
+
                     <button
                       className="btn btn-sm btn-danger me-1"
                       onClick={() => {
@@ -151,6 +181,14 @@ const Home = () => {
         </>
       )}
       {showAddBox && <AddTask childMsg={getMsgFromChilds} />}
+      {showUpdateBox&&
+      <Routes>
+        <Route
+          path="/todos/:id"
+          element={<EditTodo allTasks={allTasks} UpdateMsg={UpdateMsg} />}
+        ></Route>
+      </Routes>
+      }
     </div>
   );
 };

@@ -9,7 +9,7 @@ function App() {
       <Navbar />
       <div className="container mt-5 bg-light p-1">
         <Routes>
-          <Route exact path="/" element={<Home />}></Route>
+          <Route path="*" element={<Home />}></Route>
         </Routes>
       </div>
     </>
