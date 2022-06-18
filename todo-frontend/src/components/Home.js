@@ -2,52 +2,66 @@ import React, { useEffect, useState } from "react";
 import AddTask from "./AddTask.js";
 import axios from "axios";
 const Home = () => {
-  const BASE_URL = "http://127.0.0.1:8000/api/todos";
+  const BASE_URL = "http://127.0.0.1:8000/api/todos/";
 
   const [msg, setMsg] = useState(null);
   const [needrefresh, setNeedRefresh] = useState(null);
   const [allTasks, setAllTasks] = useState(null);
   const [isPending, setIsPending] = useState(true);
   const [error, setError] = useState(false);
-  const[showAddBox,setShowAddBox] = useState(false)
+  const [showAddBox, setShowAddBox] = useState(false);
 
   const getMsgFromChilds = (data, err) => {
     if (data) {
       setMsg("to do added");
-      setNeedRefresh(true)
+      setNeedRefresh(true);
     } else {
       setMsg(err);
     }
   };
-const fetchApiData = ()=>{
-  axios
-    .get(BASE_URL)
-    .then((res) => {
-      if (res.status !== 200)
-        throw Error("error.. cant fetch data for that url");
-      //return only data from response as an arr
-      return Object.values(res.data)[0];
-    })
-    .then((data) => {
-      setAllTasks(data);
-      console.log(data);
-      setError(false);
-      setIsPending(false);
-    })
-    .catch((err) => {
-      if (err.name === "CanceledError") {
-        //do nothing
-      } else {
-        setError(Object.values(err.response)[0]);
+  const fetchApiData = () => {
+    axios
+      .get(BASE_URL)
+      .then((res) => {
+        if (res.status !== 200)
+          throw Error("error.. cant fetch data for that url");
+        //return only data from response as an arr
+        return Object.values(res.data)[0];
+      })
+      .then((data) => {
+        setAllTasks(data);
+        setError(false);
         setIsPending(false);
-      }
-    });
-}
-const toggleAddBox = ()=>{
-  setShowAddBox(!showAddBox)
-}
+      })
+      .catch((err) => {
+        if (err.name === "CanceledError") {
+          //do nothing
+        } else {
+          setError(Object.values(err.response)[0]);
+          setIsPending(false);
+        }
+      });
+  };
+  const toggleAddBox = () => {
+    setShowAddBox(!showAddBox);
+  };
+
+  const deleteTodo = (id) => {
+    const url = BASE_URL + id;
+    axios
+      .delete(url)
+      .then((res) => {
+        //update list
+        let remainingTasks = allTasks.filter((todo) => todo.id !== id);
+        setAllTasks(remainingTasks);
+        console.log(res.data);
+      })
+      .catch((error) => {
+        setMsg(error.message);
+      });
+  };
   useEffect(() => {
-  fetchApiData()
+    fetchApiData();
   }, [needrefresh]);
 
   return (
@@ -79,9 +93,24 @@ const toggleAddBox = ()=>{
           <table className="table table-striped table-hover">
             <caption style={{ captionSide: "top" }}>
               <h5 className="d-inline">List of Tasks :</h5>
-            
-              {!showAddBox&&<button className="btn btn-sm btn-success offset-7 col-3" onClick={toggleAddBox}> Add a task</button>}
-             { showAddBox&&<button className="btn btn-sm btn-warning offset-7 col-3" onClick={toggleAddBox}>Hide add box </button>}
+
+              {!showAddBox && (
+                <button
+                  className="btn btn-sm btn-success offset-7 col-3"
+                  onClick={toggleAddBox}
+                >
+                  {" "}
+                  Add a task
+                </button>
+              )}
+              {showAddBox && (
+                <button
+                  className="btn btn-sm btn-warning offset-7 col-3"
+                  onClick={toggleAddBox}
+                >
+                  Hide add box{" "}
+                </button>
+              )}
             </caption>
 
             <thead>
@@ -103,13 +132,15 @@ const toggleAddBox = ()=>{
                   <td>{task.creator?.name}</td>
                   <td>{task.created_at}</td>
                   <td style={{ whiteSpace: "nowrap" }}>
-                    <button className="btn btn-sm btn-primary me-1">
-                      Details
-                    </button>
                     <button className="btn btn-sm btn-warning me-1">
                       Edit
                     </button>
-                    <button className="btn btn-sm btn-danger me-1">
+                    <button
+                      className="btn btn-sm btn-danger me-1"
+                      onClick={() => {
+                        deleteTodo(task.id);
+                      }}
+                    >
                       Delete
                     </button>
                   </td>
@@ -119,7 +150,7 @@ const toggleAddBox = ()=>{
           </table>
         </>
       )}
-      {showAddBox&&<AddTask childMsg={getMsgFromChilds} />}
+      {showAddBox && <AddTask childMsg={getMsgFromChilds} />}
     </div>
   );
 };
