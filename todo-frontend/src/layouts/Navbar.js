@@ -22,7 +22,7 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
             <li className="nav-item active ">
-              <Link className="nav-link" to="/todos">
+              <Link className="nav-link" to="/">
                 ALL-tasks
               </Link>
             </li>
