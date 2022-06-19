@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  backend:
+    networks:
+      - app
+    build:
+      context: ./Todo
+      dockerfile: Dockerfile
+    container_name: laravel-backend
+    environment:
+      DB_HOST: db
+      DB_DATABASE: todo
+      DB_USERNAME: laravel
+      DB_PASSWORD:  laravel
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./Todo:/app/Todo
+  frontend:
+    networks:
+      - app
+    container_name: react-frontend
+    build:
+      context: ./todo-frontend
+      dockerfile: Dockerfile
+    tty: true
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./todo-frontend:/app/todo-frontend
+    depends_on:
+      - backend
+  db:
+    networks:
+      - app
+    image: mysql:5.7.22
+    container_name: db_c
+    environment:
+        MYSQL_DATABASE: todo
+        MYSQL_USER: laravel
+        MYSQL_PASSWORD: laravel
+        MYSQL_ROOT_PASSWORD: laravel
+    ports:
+      - "8002:3306"
+
+networks:
+  app:
+    driver: bridge
