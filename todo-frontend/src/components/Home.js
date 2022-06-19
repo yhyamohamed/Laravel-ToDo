@@ -98,10 +98,9 @@ const Home = () => {
         </div>
       )}
       {error && (
-        console.log(error) 
-        // <div className="alert alert-danger" role="alert">
-        //   we'r sry , {error.message} ..pls try again later!
-        // </div>
+        <div className="alert alert-danger" role="alert">
+          we'r sry , {error.message} ..pls try again later!
+        </div>
       )}
 
       {allTasks && (
